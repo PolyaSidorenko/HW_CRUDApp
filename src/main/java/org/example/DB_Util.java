@@ -4,12 +4,19 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
+
 /**
  * Класс для получения соединения с бд
  * Загружает настройки из файла application.properties при инициализации класса
  */
 public class DB_Util {
     private static Connection connection;
+    private static Connection testConnection;
+
+    public static void setTestConnection(Connection conn) {
+        testConnection = conn;
+    }
+
 
     static {
         try {
@@ -28,6 +35,9 @@ public class DB_Util {
     }
 
     public static Connection getConnection() {
+        if (testConnection != null) {
+            return testConnection;
+        }
         return connection;
     }
 }
