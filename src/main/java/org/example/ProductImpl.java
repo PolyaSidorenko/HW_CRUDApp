@@ -1,6 +1,10 @@
 package org.example;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +13,6 @@ import java.util.List;
  * Используется JDBC для выполнения CRUD операций
  * Подключение к бд создаётся через DB_Util
  */
-
 public class ProductImpl implements ProductDAO {
 
     private final Connection connection;
@@ -35,16 +38,21 @@ public class ProductImpl implements ProductDAO {
     public List<Product> getAll() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM products";
+
         try (Statement statement = connection.createStatement(); ResultSet rs = statement.executeQuery(sql)) {
             while (rs.next()) {
-                Product product = new Product(rs.getLong("id"), rs.getString("name"),
-                        rs.getDouble("price"), rs.getInt("quantity"));
+                Product product = mapResultSet(rs);
                 list.add(product);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return list;
+    }
+
+    private Product mapResultSet(ResultSet rs) throws SQLException {
+        return new Product(rs.getLong("id"), rs.getString("name"), rs.getDouble("price"), rs.getInt("quantity"));
     }
 
     @Override
